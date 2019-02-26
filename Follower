@@ -1,0 +1,78 @@
+# Unfollower v1.0
+# Author: https://github.com/Rafell
+blue='\033[34;1m'
+green='\033[32;1m'
+purple='\033[35;1m'
+cyan='\033[36;1m'
+red='\033[31;1m'
+white='\033[37;1m'
+yellow='\033[33;1m'
+toilet -f pagga  Tools BlackHat Hacker Indonesia V.2 |lolcat
+echo "############################################################"|lolcat
+echo " Author By : Mr.F3eLL   "|lolcat
+echo " Team : BlackHat Hacker Indonesia  "|lolcat
+echo "  Facebook : Rafell "|lolcat
+echo "  Whatshap : 081316826548"|lolcat
+echo "  Instagram : Mr.F3eLL1603"|lolcat
+echo "  My Friend : Mr.SoUrchID - Mr.Jackers - Mr.Kapra - Tuan Swam - Omest -Mr.Colt - Mr.5t0n3 - Mr.L04d1n9 - Mr.Cl4y - Mr.J0N3$$/ - X666T4M -Chemod77 - M4R5H4LL - Intect - Cy#b3root - Tata Suya - Mr.Devil  - Anarki_420 - C3w3 B3rb4t4ng9 - Naskleng45 - Mr.JackX - X-Ploy - InYour TakurR - InYours3rv3r - Satya AR - Mr.Caker - IY_>//< - IY cLZCLc "|lolcat
+echo "   -=[Auto Unfollower Instagram]=-"|lolcat
+echo "   -=[Coded By : Mr.F3eLL]=-"|lolcat
+echo "    -=[Team : BlackHat Hacker Indonesia]=-"|lolcat
+echo "     -=[Whatshap : 081316826548]=-"|lolcat
+echo "      Gunakan Dengan Bijak"|lolcat
+echo "      Pliss No Recode Gua Cape Goblog Buat Nya Mikir Pake Otak"|lolcat
+echo "############################################################"|lolcat
+                                                  
+
+csrftoken=$(curl https://www.instagram.com/accounts/login/ajax -L -i -s | grep "csrftoken" | cut -d "=" -f2 | cut -d ";" -f1)
+unfollow() {
+
+while [ true ]; do
+
+printf "\e[1;77m[+] Creating followers list\e[0m\n" 
+curl -s -b cookies.txt 'https://www.instagram.com/'$username'/following' -L > following_request.txt
+grep -o '"id":"[0-9]\{10\}"' following_request.txt | cut -d '"' -f4 > following_id
+
+for line in $(cat following_id); do
+printf "\e[1;77m[*] Trying to unfollow user id:\e[0m\e[1;93m %s\e[0m\n" $line
+
+{( trap '' SIGINT && unfollow=$(curl -b cookies.txt -H 'Cookie: csrftoken='$csrftoken'' -H 'X-Instagram-AJAX: 1' -H 'Referer: https://www.instagram.com/' -H 'X-CSRFToken:'$csrftoken'' -H 'X-Requested-With: XMLHttpRequest' "https://www.instagram.com/web/friendships/$line/unfollow/" -s -L --request POST | grep -o '"status": "ok"'); if [[ "$unfollow" == *'"status": "ok"'* ]]; then printf "\e[1;92m[*] User unfollowed. Sleeping 10 sec...\e[0m\n" ; sleep 10 ; else printf "\e[1;93m[!] User not unfollowed. Sleeping 5min\e[0m\n" ; sleep 300 ; fi )} & wait $!;
+
+done
+done
+}
+
+
+login_user() {
+
+IFS=$'\n'
+default_username=""
+default_password=""
+
+if [[ "$default_username" == "" ]]; then
+read -p $'\e[1;92m[*] Username: \e[0m' username
+else
+username="${username:-${default_username}}"
+fi
+
+if [[ "$default_password" == "" ]]; then
+read -s -p $'\e[1;92m[*] Password: \e[0m' password
+else
+password="${password:-${default_password}}"
+fi
+
+printf "\e[\n1;77m[*] Trying to login as\e[0m\e[1;77m %s\e[0m\n" $username
+check_login=$(curl  -c cookies.txt 'https://www.instagram.com/accounts/login/ajax/' -H 'Cookie: csrftoken='$csrftoken'' -H 'X-Instagram-AJAX: 1' -H 'Referer: https://www.instagram.com/' -H 'X-CSRFToken:'$csrftoken'' -H 'X-Requested-With: XMLHttpRequest' --data 'username='$username'&password='$password'&intent' -L --compressed -s | grep -o '"authenticated": true')
+
+if [[ "$check_login" == *'"authenticated": true'* ]]; then
+printf "\e[1;92m[*] Login Successful!\e[0m\n"
+
+unfollow
+
+else
+printf "\e[1;93m[!] Check your login data or IP! Dont use Tor, VPN, Proxy. It's requires your usual IP.\n\e[0m"
+exit 1
+fi
+
+}
+login_user
